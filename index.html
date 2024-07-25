@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+    const dataFormMaker = function(){
+      const inputYear = document.querySelector('#target-year-input').value;
+      const inputMounth = document.querySelector('#target-month-input').value;
+      const inputDate = document.querySelector('#target-date-input').value;
+      
+      // const dateFormat = inputYear + '-' + inputMounth + '-' + inputDate;
+      const dateFormat = `${inputYear}-${inputMounth}-${inputDate}`;
+      return dateFormat;//dataFormat 값을 외부에서 사용하기 위해 반환해줌
+    }
+    const countMaker = function(){
+        const targetDateInput = dataFormMaker();//dataFormatMaker에서 반환한 dataFormat값을 사용하기 위해 변수에 함수를 불러옴
+        const nowDate = new Date();//현재 날짜&시간
+        const targetDate = new Date(targetDateInput).setHours(0,0,0,0); //목표한 날짜 입력 / setHours(0,0,0,0) : 자정을 기준으로 시간을 다시 구함
+        const restTime = targetDate - nowDate; //남아있는 시간 구하기
+        const remaining = restTime / 1000; //소수점 구분을 위한 1000나누기
+        const remainingDate = Math.floor(remaining/86400); //남아있는 날짜를 알아내기 위해 남아있는 날짜/(60(초)*60(분)*24(시간))
+        const remainingHours = Math.floor((remaining/3600)%24);//남아있는 시간을 알아내기 위해 남아있는 날짜를 24로 나눴을 때 나머지 값을 60(초)*60(분)으로 나눠줌
+        const remainingMin = Math.floor((remaining/60)%60);
+        const remainingSec = Math.floor(remaining%60)
+        console.log(remainingDate + '일', remainingHours + '시간', remainingMin + '분', remainingSec + '초');
+      }
+  </script>
+  <title>D-Day</title>
+</head> 
+<body>
+  <h1>D-Day</h1>
+  <input id="target-year-input" class="target-input" />
+  <input id="target-month-input" class="target-input"/>
+  <input id="target-date-input" class="target-input"/>
+  <button onclick="countMaker()">버튼</button>
+</body>
+</html>
