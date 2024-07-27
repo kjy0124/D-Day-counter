@@ -1,7 +1,7 @@
 const messageContainer = document.querySelector('#d-day-message');
 const container = document.querySelector('#d-day-container');
 
-// container.style.display = 'none'; //display에 none 값을 줌으로써 0일0시간0분0초라는 메세지가 사라지게 함
+container.style.display = 'none'; //display에 none 값을 줌으로써 0일0시간0분0초라는 메세지가 사라지게 함
 messageContainer.innerHTML = '<h3>D-day를 입력해주세요.</h3>';
 
 const dataFormMaker = function () {
@@ -73,4 +73,11 @@ const countMaker = function () {
   // documentObj['hours'].textContent = remainingObj['remainingHours'];
   // documentObj['min'].textContent = remainingObj['remainingMin'];
   // documentObj['sec'].textContent = remainingObj['remainingSec'];
+};
+
+//D-day를 입력해주세요 창에 시간이 나올 수 있도록 해주는 함수
+const starter = function () {
+  container.style.display = 'flex'; //일, 시간, 초 나오는 컨테이너의 스타일을 수정
+  messageContainer.style.display = 'none'; //디데이를 입력해주세요의 컨테이너 display를 사라질 수 있도록 수정
+  countMaker(); //버튼과 연결된 함수를 stater 함수와 연결해서 여기서 실행시킬 수 있도록 수정
 };
