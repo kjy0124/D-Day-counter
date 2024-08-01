@@ -1,5 +1,6 @@
 const messageContainer = document.querySelector('#d-day-message');
 const container = document.querySelector('#d-day-container');
+const intervalIdArr = [];
 
 container.style.display = 'none'; //display에 none 값을 줌으로써 0일0시간0분0초라는 메세지가 사라지게 함
 messageContainer.innerHTML = '<h3>D-day를 입력해주세요.</h3>';
@@ -24,12 +25,14 @@ const countMaker = function () {
     container.style.display = 'none';
     messageContainer.innerHTML = '<h3>타이머가 종료되었습니다.</h3>';
     messageContainer.style.display = 'flex';
+    setClearInterval();
     return;
   } else if (isNaN(remaining)) {
     //만약 측정 불가 시간 때를 입력했을 시
     container.style.display = 'none';
     messageContainer.innerHTML = '<h3>유효한 시간 때가 아닙니다.</h3>';
     messageContainer.style.display = 'flex';
+    setClearInterval();
     return;
   }
 
@@ -85,11 +88,24 @@ const starter = function () {
   container.style.display = 'flex'; //일, 시간, 초 나오는 컨테이너의 스타일을 수정
   messageContainer.style.display = 'none'; //디데이를 입력해주세요의 컨테이너 display를 사라질 수 있도록 수정
   countMaker(); //처음에 측정 전에 0일 0시간 0분 0초가 보이지 않고 바로 측정하기 위해 함수를 한번 호출 한 후 아래 측정 코드를 실행
-  setInterval(countMaker, 1000); //setInterval함수는 아래의 for문과 setTimeout함수보다 더 간단하게 사용될 수 있다.
+  const intervalId = setInterval(countMaker, 1000); //setInterval함수는 아래의 for문과 setTimeout함수보다 더 간단하게 사용될 수 있다.
+  //변수 intervalId는 반복중인 코드의 id 값이다.
+  intervalIdArr.push(intervalId); //starter 함수가 실행될 때마다 intarval이 생성될 것이고
+  //그 후에  intervalArr에 intervalId를 넣어줄 것이다.
+
   // for (let i = 0; i < 100; i++) {
   // setTimeout(() => {
   //   //setTimeout은 뒤의 1000*i이라는 숫자 만큼 지나면 countMaker함수가 실행됨
   //   countMaker(); //버튼과 연결된 함수를 stater 함수와 연결해서 여기서 실행시킬 수 있도록 수정
   // }, 1000 * i);
   // }
+};
+
+const setClearInterval = function () {
+  container.style.display = 'none'; //타이머 초기화 버튼 클릭 시 이전 기록 사라지게 하는 기능
+  messageContainer.innerHTML = '<h3>D-day를 입력해주세요.</h3>'; //타이머 초기화 버튼 클릭 시 이전 기록 사라지게 하는 기능
+  messageContainer.style.display = 'flex'; //D-day를 입력해주세요라는 컨테이너가 통째로 사라지기에 스타일 값에 flex로 준다
+  for (let i = 0; i < intervalIdArr.length; i++) {
+    clearInterval(intervalIdArr[i]);
+  }
 };
