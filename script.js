@@ -13,10 +13,10 @@ const dataFormMaker = function () {
   const dateFormat = `${inputYear}-${inputMounth}-${inputDate}`;
   return dateFormat; //dataFormat 값을 외부에서 사용하기 위해 반환해줌
 };
-const countMaker = function () {
+const countMaker = function (data) {
   const targetDateInput = dataFormMaker(); //dataFormatMaker에서 반환한 dataFormat값을 사용하기 위해 변수에 함수를 불러옴
   const nowDate = new Date(); //현재 날짜&시간
-  const targetDate = new Date(targetDateInput).setHours(0, 0, 0, 0); //목표한 날짜 입력 / setHours(0,0,0,0) : 자정을 기준으로 시간을 다시 구함
+  const targetDate = new Date(data).setHours(0, 0, 0, 0); //목표한 날짜 입력 / setHours(0,0,0,0) : 자정을 기준으로 시간을 다시 구함
   const restTime = targetDate - nowDate; //남아있는 시간 구하기
   const remaining = restTime / 1000; //소수점 구분을 위한 1000나누기
 
@@ -48,9 +48,19 @@ const countMaker = function () {
   const timeKeys = Object.keys(remainingObj); //remainObj의 keyr값을 배열에 저장
   //temeKeys의 배열에는 ['remainingDate', 'remainingHours', 'remainingMin', 'remainingSec']와 같다.
 
+  //아래는 시간이 10 밑으로 떨어졌을 때 09 08 07 이런식으로 나올 수 있도록 하는 함수
+  const format = function (time) {
+    if (time < 10) {
+      return '0' + time;
+    } else {
+      return time;
+    }
+  };
+
   let i = 0;
   for (let tag of documentArr) {
-    document.getElementById(tag).textContent = remainingObj[timeKeys[i]];
+    const remainingTime = format(remainingObj[timeKeys[i]]);
+    document.getElementById(tag).textContent = remainingTime;
     i++;
   }
   // const documentObj = {
@@ -85,10 +95,14 @@ const countMaker = function () {
   // documentObj['sec'].textContent = remainingObj['remainingSec'];
 };
 const starter = function () {
+  const targetDateInput = dataFormMaker(); //dataFormatMaker에서 반환한 dataFormat값을 사용하기 위해 변수에 함수를 불러옴
   container.style.display = 'flex'; //일, 시간, 초 나오는 컨테이너의 스타일을 수정
   messageContainer.style.display = 'none'; //디데이를 입력해주세요의 컨테이너 display를 사라질 수 있도록 수정
-  countMaker(); //처음에 측정 전에 0일 0시간 0분 0초가 보이지 않고 바로 측정하기 위해 함수를 한번 호출 한 후 아래 측정 코드를 실행
-  const intervalId = setInterval(countMaker, 1000); //setInterval함수는 아래의 for문과 setTimeout함수보다 더 간단하게 사용될 수 있다.
+  setClearInterval(); //카운트다운 시작 후 날짜 변경 했을 때 생기는 이상한 오류 해결하기 위해 인터벌 모두 삭제하는 기능 추가
+  countMaker(targetDateInput); //처음에 측정 전에 0일 0시간 0분 0초가 보이지 않고 바로 측정하기 위해 함수를 한번 호출 한 후 아래 측정 코드를 실행
+  const intervalId = setInterval(() => {
+    countMaker(targetDateInput);
+  }, 1000); //setInterval함수는 아래의 for문과 setTimeout함수보다 더 간단하게 사용될 수 있다.
   //변수 intervalId는 반복중인 코드의 id 값이다.
   intervalIdArr.push(intervalId); //starter 함수가 실행될 때마다 intarval이 생성될 것이고
   //그 후에  intervalArr에 intervalId를 넣어줄 것이다.
@@ -102,10 +116,16 @@ const starter = function () {
 };
 
 const setClearInterval = function () {
-  container.style.display = 'none'; //타이머 초기화 버튼 클릭 시 이전 기록 사라지게 하는 기능
-  messageContainer.innerHTML = '<h3>D-day를 입력해주세요.</h3>'; //타이머 초기화 버튼 클릭 시 이전 기록 사라지게 하는 기능
-  messageContainer.style.display = 'flex'; //D-day를 입력해주세요라는 컨테이너가 통째로 사라지기에 스타일 값에 flex로 준다
   for (let i = 0; i < intervalIdArr.length; i++) {
     clearInterval(intervalIdArr[i]);
   }
+};
+
+//위의 함수를 사용하게 될 때 날짜를 쓰지 않거나 이상하게 입력했을 때 메세지 컨테이너가 적용이 안되어
+//아래와 같은 함수를 선언
+const resetTimer = function () {
+  container.style.display = 'none'; //타이머 초기화 버튼 클릭 시 이전 기록 사라지게 하는 기능
+  messageContainer.innerHTML = '<h3>D-day를 입력해주세요.</h3>'; //타이머 초기화 버튼 클릭 시 이전 기록 사라지게 하는 기능
+  messageContainer.style.display = 'flex'; //D-day를 입력해주세요라는 컨테이너가 통째로 사라지기에 스타일 값에 flex로 준다
+  setClearInterval();
 };
