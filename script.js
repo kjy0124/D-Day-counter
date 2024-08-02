@@ -1,9 +1,7 @@
 const messageContainer = document.querySelector('#d-day-message');
 const container = document.querySelector('#d-day-container');
 const intervalIdArr = [];
-
-container.style.display = 'none'; //display에 none 값을 줌으로써 0일0시간0분0초라는 메세지가 사라지게 함
-messageContainer.innerHTML = '<h3>D-day를 입력해주세요.</h3>';
+const savedDate = localStorage.getItem('saved-date'); //localStorage에 'saved-date'라는 키와 대응 되는 벨류가 savedDate라는 변수에 담겨진다
 
 const dataFormMaker = function () {
   const inputYear = document.querySelector('#target-year-input').value;
@@ -14,6 +12,12 @@ const dataFormMaker = function () {
   return dateFormat; //dataFormat 값을 외부에서 사용하기 위해 반환해줌
 };
 const countMaker = function (data) {
+  if (data !== savedDate) {
+    //받아온 데이터와 저장되어있는 데이터가 다를 때
+
+    //사용자가 입력했던 데이터를 남기기 위해 localStorage 사용. setItem(key, value)형태
+    localStorage.setItem('saved-date', data);
+  }
   const targetDateInput = dataFormMaker(); //dataFormatMaker에서 반환한 dataFormat값을 사용하기 위해 변수에 함수를 불러옴
   const nowDate = new Date(); //현재 날짜&시간
   const targetDate = new Date(data).setHours(0, 0, 0, 0); //목표한 날짜 입력 / setHours(0,0,0,0) : 자정을 기준으로 시간을 다시 구함
@@ -94,8 +98,12 @@ const countMaker = function (data) {
   // documentObj['min'].textContent = remainingObj['remainingMin'];
   // documentObj['sec'].textContent = remainingObj['remainingSec'];
 };
-const starter = function () {
-  const targetDateInput = dataFormMaker(); //dataFormatMaker에서 반환한 dataFormat값을 사용하기 위해 변수에 함수를 불러옴
+const starter = function (targetDateInput) {
+  if (!targetDateInput) {
+    //만일 targetDateInput이 undefined라면,
+    targetDateInput = dataFormMaker(); //dataFormatMaker에서 반환한 dataFormat값을 사용하기 위해 변수에 함수를 불러옴
+  }
+
   container.style.display = 'flex'; //일, 시간, 초 나오는 컨테이너의 스타일을 수정
   messageContainer.style.display = 'none'; //디데이를 입력해주세요의 컨테이너 display를 사라질 수 있도록 수정
   setClearInterval(); //카운트다운 시작 후 날짜 변경 했을 때 생기는 이상한 오류 해결하기 위해 인터벌 모두 삭제하는 기능 추가
@@ -116,6 +124,7 @@ const starter = function () {
 };
 
 const setClearInterval = function () {
+  localStorage.removeItem('saved-date'); //타이머초기화버튼 클릭 시 로컬호스트 스토리지에 저장된 데이터 삭제
   for (let i = 0; i < intervalIdArr.length; i++) {
     clearInterval(intervalIdArr[i]);
   }
@@ -129,3 +138,12 @@ const resetTimer = function () {
   messageContainer.style.display = 'flex'; //D-day를 입력해주세요라는 컨테이너가 통째로 사라지기에 스타일 값에 flex로 준다
   setClearInterval();
 };
+
+//localhost 스토리지에 데이터를 남기기 위해 추가로 사용되는 함수
+//이 함수는 데이터가 올바르게 저장되어있는지 조건식을 사용함
+if (savedDate) {
+  starter(savedDate);
+} else {
+  container.style.display = 'none'; //display에 none 값을 줌으로써 0일0시간0분0초라는 메세지가 사라지게 함
+  messageContainer.innerHTML = '<h3>D-day를 입력해주세요.</h3>';
+}
