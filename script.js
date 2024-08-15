@@ -63,8 +63,8 @@ const countMaker = function (data) {
 
   let i = 0;
   for (let tag of documentArr) {
-    const remainingTime = format(remainingObj[timeKeys[i]]);
-    document.getElementById(tag).textContent = remainingTime;
+    const remainingTime = format(remainingObj[timeKeys[i]]); //remainingObj 객체 안에 있는 tag 값을 저장한 teimeKeys배열을 반복
+    document.getElementById(tag).textContent = remainingTime; //반복한 tag값을 textConent에 표시
     i++;
   }
   // const documentObj = {
